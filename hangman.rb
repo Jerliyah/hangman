@@ -30,15 +30,35 @@ end
 
 # Pick a word from the filtered list at random
 GAME_WORD = filtered_words[ rand(filtered_words.length - 1) ]
+puts GAME_WORD
 
 
+# Right or wrong alert
+def right_answer
+    puts "\nNice one, you guessed the right letter"
+end
+
+
+def wrong_answer
+    puts "\nNope, not that letter"
+
+    # Countdown of mistakes left
+    mistakes_left -= 1
+end
 
 # Interface for guessing letters (one player against comp)
 # [Start of with random letters -> random letters in a certain range of known letter -> guess next later based on known words in dictionary]
+puts "Please type in a letter"
+guess_letter = gets.chomp
 
-# Right or wrong alert
+if GAME_WORD.include? guess_letter
+    right_answer
+else
+    wrong_answer
+end
 
-# Countdown of mistakes left
+
+
 
 # Save game functionality 
 
