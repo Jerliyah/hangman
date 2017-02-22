@@ -31,22 +31,46 @@ dictionary.each do |word|
 end
 
 
-
 # Pick a word from the filtered list at random
 GAME_WORD = filtered_words[ rand(filtered_words.length - 1) ]
-puts GAME_WORD
+
+# Format the word into a secret for in game viewing
+def secret_word_format(game_word)
+    # Array
+    letters = []
+
+    # Push each letter into array
+    game_word.each_char do |letter| 
+        letters << letter 
+    end
+
+    # Format secret word to have letters replaced with underscores and spacing
+    $secret_word = letters.join(" ").gsub( /[a-z]/, "_")
+
+    # Return
+    $secret_word
+end
+
+secret_word_format(GAME_WORD)
+
+
+# LATER: Remove
+puts "Game word: #{GAME_WORD}"
+puts "hidden: #{$secret_word}"
 
 
 
 # Global player variables so that all functions know if the user or computer is taking their turn
 $player = :user
+
+# Global number of mistakes left before game over
 $mistakes_left = 3
 
 
 
 # Right or wrong alert
 def right_answer
-    puts "\nNice one, you guessed the right letter"
+    puts "\nNice one"
 end
 
 
@@ -94,19 +118,6 @@ def comp_takes_turn
 end
 
 
-def close_game
-    puts "That's the end of the game!"
-    abort
-end
-
-
-def between_turns
-    if $mistakes_left <= 0 then
-        close_game
-    end
-end
-
-
 def taking_turns(player)
 
     between_turns
@@ -116,6 +127,23 @@ def taking_turns(player)
     else
         comp_takes_turn
     end
+end
+
+
+def between_turns
+    if $mistakes_left <= 0 then
+        close_game
+    end
+
+    puts $secret_word
+
+    puts "Mistakes Left: #{$mistakes_left}"
+end
+
+
+def close_game
+    puts "That's the end of the game!"
+    abort
 end
 
 
