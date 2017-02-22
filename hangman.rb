@@ -17,8 +17,21 @@
 
 
 # Read 5desk line by line
+dictionary = File.readlines "5desk.txt"
 
 # Filter words that are 5 to 12 characters long
+filtered_words = []
+
+dictionary.each do |word|
+    if (5..12).to_a.include? word.length
+        filtered_words << word
+    end
+end
+
+# Pick a word from the filtered list at random
+GAME_WORD = filtered_words[ rand(filtered_words.length - 1) ]
+
+
 
 # Interface for guessing letters (one player against comp)
 # [Start of with random letters -> random letters in a certain range of known letter -> guess next later based on known words in dictionary]
@@ -36,4 +49,5 @@
 # When program is run, check for saves before starting new, and retrieve data
 
 # Properly use the data to start from save spot
+
 
