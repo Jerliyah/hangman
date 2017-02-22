@@ -19,8 +19,6 @@
 # Read 5desk line by line
 dictionary = File.readlines "5desk.txt"
 
-
-
 # Filter words that are 5 to 12 characters long
 filtered_words = []
 
@@ -31,41 +29,29 @@ dictionary.each do |word|
 end
 
 
+
+
 # Pick a word from the filtered list at random
 GAME_WORD = filtered_words[ rand(filtered_words.length - 1) ]
-$secret_word = ""
 
 # Format the word into a secret for in game viewing
-def secret_word_format(game_word)
+def secret_word_format
     # Array
     letters = []
 
     # Push each letter into array
-    game_word.each_char do |letter| 
+    GAME_WORD.each_char do |letter| 
         letters << letter 
     end
 
     # Format secret word to have letters replaced with underscores and spacing
     $secret_word = letters.join(" ").gsub( /[a-z]/, "_")
-
-    # Return
-    $secret_word
 end
 
-secret_word_format(GAME_WORD)
-
-
-# LATER: Remove
-puts "Game word: #{GAME_WORD}"
-puts "hidden: #{$secret_word}"
+secret_word_format
 
 
 
-# Global player variables so that all functions know if the user or computer is taking their turn
-$player = :user
-
-# Global number of mistakes left before game over
-$mistakes_left = 3
 
 # Reformat when letters are found
 def reformat_secret_word(guess_letter)
@@ -82,6 +68,22 @@ def reformat_secret_word(guess_letter)
 
     secret_word
 end
+
+
+# LATER: Remove
+puts "Game word: #{GAME_WORD}"
+puts "hidden: #{$secret_word}"
+
+
+
+
+# Global player variables so that all functions know if the user or computer is taking their turn
+$player = :user
+
+# Global number of mistakes left before game over
+$mistakes_left = 3
+
+
 
 
 # Right or wrong alert
@@ -107,6 +109,7 @@ def right_or_wrong(guess_letter)
         wrong_answer
     end
 end
+
 
 
 
@@ -161,6 +164,8 @@ def between_turns
 end
 
 
+
+
 def close_game
     puts "That's the end of the game!"
     abort
@@ -169,6 +174,9 @@ end
 
 taking_turns($player)
 
+
+
+# Option to solve whole word or provide letter
 
 # Save game functionality 
 
@@ -179,5 +187,9 @@ taking_turns($player)
 # When program is run, check for saves before starting new, and retrieve data
 
 # Properly use the data to start from save spot
+
+# Establish procedure and refactor
+
+
 
 
