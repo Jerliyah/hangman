@@ -15,3 +15,25 @@
 
 =end
 
+
+# Read 5desk line by line
+
+# Filter words that are 5 to 12 characters long
+
+# Interface for guessing letters (one player against comp)
+# [Start of with random letters -> random letters in a certain range of known letter -> guess next later based on known words in dictionary]
+
+# Right or wrong alert
+
+# Countdown of mistakes left
+
+# Save game functionality 
+
+# Send save game data to a file
+
+# Close game functionality
+
+# When program is run, check for saves before starting new, and retrieve data
+
+# Properly use the data to start from save spot
+
