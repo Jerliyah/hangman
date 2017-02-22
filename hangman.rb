@@ -33,6 +33,7 @@ end
 
 # Pick a word from the filtered list at random
 GAME_WORD = filtered_words[ rand(filtered_words.length - 1) ]
+$secret_word = ""
 
 # Format the word into a secret for in game viewing
 def secret_word_format(game_word)
@@ -66,11 +67,28 @@ $player = :user
 # Global number of mistakes left before game over
 $mistakes_left = 3
 
+# Reformat when letters are found
+def reformat_secret_word(guess_letter)
+    locations = GAME_WORD.split('').each_index.select do |letter| GAME_WORD[letter] == guess_letter end
+
+    secret_word = $secret_word.split(' ')
+
+    for i in 0...locations.length
+        index = locations[i]
+        secret_word[index] = guess_letter
+    end
+
+    secret_word = secret_word.join(" ")
+
+    secret_word
+end
 
 
 # Right or wrong alert
-def right_answer
+def right_answer(guess_letter)
     puts "\nNice one"
+
+    $secret_word = reformat_secret_word(guess_letter)
 end
 
 
@@ -84,7 +102,7 @@ end
 
 def right_or_wrong(guess_letter)
     if GAME_WORD.include? guess_letter
-        right_answer
+        right_answer(guess_letter)
     else
         wrong_answer
     end
@@ -107,6 +125,8 @@ end
 
 def comp_takes_turn
     $player = :comp
+
+    puts "\nComputer's turn"
 
     # [Start of with random letters -> random letters in a certain range of known letter -> guess next later based on known words in dictionary]
     randIndex = rand(26)
