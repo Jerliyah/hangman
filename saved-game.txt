@@ -1,1 +1,1 @@
-"{ $game_word : #{$game_word} , $secret_word : #{$secret_word} , $mistakes_left : #{$mistakes_left} }"
+{ :$game_word => "monikered" , :$secret_word => "m o _ _ k _ _ _ _" , :$mistakes_left => "2" }

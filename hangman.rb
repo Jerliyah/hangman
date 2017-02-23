@@ -1,5 +1,3 @@
-require 'rubygems'
-require 'json'
 
 =begin
 =========================
@@ -159,7 +157,7 @@ def between_turns
     end
 
     # Remind user that they can save their game
-    puts "\n=============== Rmbr: Can save game by typing --save ===============\n"
+    puts "\n=============== Rmbr: You can save game by typing --save ===============\n"
 
     # Show current $secret_word (letters may have been uncovered and user needs to know number of spaces)
     puts "\n\nFigure out this word:"
@@ -187,6 +185,8 @@ def give_letter_or_word
         "letter"
     elsif choice == '2' || choice == 'word'
         "word"
+    elsif choice == '--save'
+        save_game
     else
         puts "That's not a valid answer"
         give_letter_or_word
@@ -197,7 +197,11 @@ end
 # Save the current game for later
 def save_game
     saved_game_file = File.open("saved-game.txt", "w")
-    saved_game_file.puts '"{ $game_word : #{$game_word} , $secret_word : #{$secret_word} , $mistakes_left : #{$mistakes_left} }"'
+    # saved_game_file.puts "{ $game_word : #{$game_word} , $secret_word : #{$secret_word} , $mistakes_left : #{$mistakes_left} }"
+    # saved_game_file.puts "{ $game_word : \"#{$game_word}\" , $secret_word : \"#{$secret_word}\" , $mistakes_left : \"#{$mistakes_left}\" }"
+
+    saved_game_file.puts "{ :$game_word => \"#{$game_word}\" , :$secret_word => \"#{$secret_word}\" , :$mistakes_left => \"#{$mistakes_left}\" }"
+
     saved_game_file.close  
 
     puts "\n\nGame has been saved"
@@ -276,11 +280,22 @@ end
 
 def start_saved_game
     saved_game_file = File.open("saved-game.txt", "r")
-    content = saved_game_file.read
-    p content
-    content_obj = JSON.parse(content)
+    content = saved_game_file.read.chomp
+    content_obj = eval(content)
     
-    p content_obj
+    $game_word = content_obj[:$game_word]
+    $secret_word = content_obj[:$secret_word]
+    $mistakes_left = content_obj[:$mistakes_left].to_i
+
+     # TODO: Remove
+    puts "Game word: #{$game_word}"
+    puts "hidden: #{$secret_word}"
+
+    # Global player variable so that all functions know if the user or computer is taking their turn
+    $player = :user
+
+    # First turn
+    taking_turns($player)
 end
 
 
