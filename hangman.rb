@@ -1,3 +1,6 @@
+require 'rubygems'
+require 'json'
+
 =begin
 =========================
       Instructions
@@ -18,13 +21,13 @@
 
 
 
-# Format the GAME_WORD into a secret for in game viewing
+# Format the $game_word into a secret for in game viewing
 def create_secret_word
     # Array
     letters = []
 
     # Push each letter into array
-    GAME_WORD.each_char do |letter| 
+    $game_word.each_char do |letter| 
         letters << letter 
     end
 
@@ -35,7 +38,7 @@ end
 
 # Reformat secret_word when letters are found
 def reformat_secret_word(guess_letter)
-    locations = GAME_WORD.split('').each_index.select do |letter| GAME_WORD[letter] == guess_letter end
+    locations = $game_word.split('').each_index.select do |letter| $game_word[letter] == guess_letter end
 
     secret_word = $secret_word.split(' ')
 
@@ -54,7 +57,7 @@ end
 # Actions based on right on wrong letter answer
 def right_or_wrong_letter(guess_letter)
 
-    if GAME_WORD.include? guess_letter
+    if $game_word.include? guess_letter
         puts "\nNice"
 
         # Show found letters
@@ -73,7 +76,7 @@ end
 # Actions based on right on wrong word answer
 def right_or_wrong_word(guess_word)
 
-    if guess_word == GAME_WORD
+    if guess_word == $game_word
         puts "\nAmazing! The puzzle has been solved, great job."
         close_game
 
@@ -163,7 +166,7 @@ def between_turns
     puts $secret_word
 
     # Close game when all letters found
-    if $secret_word == GAME_WORD
+    if $secret_word == $game_word
         puts "\nAll the letters were found! Great job"
         close_game
     end
@@ -194,7 +197,7 @@ end
 # Save the current game for later
 def save_game
     saved_game_file = File.open("saved-game.txt", "w")
-    saved_game_file.puts "{ :GAME_WORD => #{GAME_WORD} , :$secret_word => #{$secret_word} , :$mistakes_left => #{$mistakes_left} }"
+    saved_game_file.puts '"{ $game_word : #{$game_word} , $secret_word : #{$secret_word} , $mistakes_left : #{$mistakes_left} }"'
     saved_game_file.close  
 
     puts "\n\nGame has been saved"
@@ -217,21 +220,83 @@ def close_game
 end
 
 
+def saved_or_new
+    puts "Would you like to reopen it or start a new game? (type number)"
+    puts "1. Saved game \n2. New game"
+
+   choice = gets.chomp
+
+   if choice == '1'
+       start_saved_game
+
+    elsif choice == '2'
+        new_game
+
+    else
+        puts "That's not a valid answer"
+        saved_or_new
+    end
+
+end
+
+
+def new_game
+    # Read 5desk line by line
+    dictionary = File.readlines "5desk.txt"
+
+    # Filter words that are 5 to 12 characters long
+    filtered_words = []
+
+    dictionary.each do |word|
+        if (5..12).to_a.include? word.length
+            filtered_words << word
+        end
+    end
+
+
+    # Pick a word from the filtered list at random
+    $game_word = filtered_words[ rand(filtered_words.length - 1) ].chomp
+
+    create_secret_word
+
+    # TODO: Remove
+    puts "Game word: #{$game_word}"
+    puts "hidden: #{$secret_word}"
+
+    # Global player variable so that all functions know if the user or computer is taking their turn
+    $player = :user
+
+    # Global number of mistakes left before game over
+    $mistakes_left = 3
+
+    # First turn
+    taking_turns($player)
+end
+
+
+def start_saved_game
+    saved_game_file = File.open("saved-game.txt", "r")
+    content = saved_game_file.read
+    p content
+    content_obj = JSON.parse(content)
+    
+    p content_obj
+end
 
 
 
 
-# Option to solve whole word or provide letter
 
-# Save game functionality 
 
-# Send save game data to a file
 
-# Close game functionality
 
-# When program is run, check for saves before starting new, and retrieve data
+
+
+# Retrive save data
 
 # Properly use the data to start from save spot
+
+# Save data include every output line of game
 
 # Establish procedure and refactor
 
@@ -243,32 +308,16 @@ end
 ------------------------ 
 =end
 
-# Read 5desk line by line
-dictionary = File.readlines "5desk.txt"
 
-# Filter words that are 5 to 12 characters long
-filtered_words = []
+# Check for saved games
 
-dictionary.each do |word|
-    if (5..12).to_a.include? word.length
-        filtered_words << word
-    end
+
+if File.exists?("saved-game.txt")
+
+   puts "Looks like you have a saved game"
+   saved_or_new
+
+else
+    new_game
 end
 
-# Pick a word from the filtered list at random
-GAME_WORD = filtered_words[ rand(filtered_words.length - 1) ].chomp
-
-create_secret_word
-
-# TODO: Remove
-puts "Game word: #{GAME_WORD}"
-puts "hidden: #{$secret_word}"
-
-# Global player variable so that all functions know if the user or computer is taking their turn
-$player = :user
-
-# Global number of mistakes left before game over
-$mistakes_left = 3
-
-# First turn
-taking_turns($player)

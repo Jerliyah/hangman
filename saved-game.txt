@@ -1,1 +1,1 @@
-{ :GAME_WORD => thigh , :$secret_word => _ _ _ _ _ , :$mistakes_left => 3 }
+"{ $game_word : #{$game_word} , $secret_word : #{$secret_word} , $mistakes_left : #{$mistakes_left} }"
