@@ -16,26 +16,10 @@
 =end
 
 
-# Read 5desk line by line
-dictionary = File.readlines "5desk.txt"
-
-# Filter words that are 5 to 12 characters long
-filtered_words = []
-
-dictionary.each do |word|
-    if (5..12).to_a.include? word.length
-        filtered_words << word
-    end
-end
 
 
-
-
-# Pick a word from the filtered list at random
-GAME_WORD = filtered_words[ rand(filtered_words.length - 1) ]
-
-# Format the word into a secret for in game viewing
-def secret_word_format
+# Format the GAME_WORD into a secret for in game viewing
+def create_secret_word
     # Array
     letters = []
 
@@ -48,12 +32,8 @@ def secret_word_format
     $secret_word = letters.join(" ").gsub( /[a-z]/, "_")
 end
 
-secret_word_format
 
-
-
-
-# Reformat when letters are found
+# Reformat secret_word when letters are found
 def reformat_secret_word(guess_letter)
     locations = GAME_WORD.split('').each_index.select do |letter| GAME_WORD[letter] == guess_letter end
 
@@ -70,109 +50,152 @@ def reformat_secret_word(guess_letter)
 end
 
 
-# LATER: Remove
-puts "Game word: #{GAME_WORD}"
-puts "hidden: #{$secret_word}"
 
+# Actions based on right on wrong letter answer
+def right_or_wrong_letter(guess_letter)
 
-
-
-# Global player variables so that all functions know if the user or computer is taking their turn
-$player = :user
-
-# Global number of mistakes left before game over
-$mistakes_left = 3
-
-
-
-
-# Right or wrong alert
-def right_answer(guess_letter)
-    puts "\nNice one"
-
-    $secret_word = reformat_secret_word(guess_letter)
-end
-
-
-def wrong_answer
-    puts "\nNope, not that letter"
-
-    # Countdown of mistakes left
-    $mistakes_left -= 1
-end
-
-
-def right_or_wrong(guess_letter)
     if GAME_WORD.include? guess_letter
-        right_answer(guess_letter)
+        puts "\nNice"
+
+        # Show found letters
+        $secret_word = reformat_secret_word(guess_letter)
+
     else
-        wrong_answer
+        puts "\nNope, that's not it"
+
+        # Countdown of mistakes left
+        $mistakes_left -= 1
     end
+
+end
+
+
+# Actions based on right on wrong word answer
+def right_or_wrong_word(guess_word)
+
+    if guess_word == GAME_WORD
+        puts "\nAmazing! The puzzle has been solved, great job."
+        close_game
+
+    else
+        puts "\nOh my gosh! You did it! (it = providing the wrong answer)"
+        puts "Better luck next time"
+
+        # Countdown of mistakes left
+        $mistakes_left -= 1
+    end
+    
 end
 
 
 
+# When the user takes their turn
+def user_takes_turn(choice)
 
-def user_takes_turn
     $player = :user
 
-    # Interface for guessing letters (one player against comp)
-    puts "Please type in a letter"
-    guess_letter = gets.chomp
+    if choice == "letter"
+        # Interface for guessing letters (one player against comp)
+        puts "\nPlease type in a letter"
+        guess_letter = gets.chomp
 
-    right_or_wrong(guess_letter)
+        right_or_wrong_letter(guess_letter)
+    else
+        puts "\nSomeone is feeling courageous, give it a shot by typing in the word"
+        guess_word = gets.chomp
+
+        right_or_wrong_word(guess_word)
+    end
 
     taking_turns(:comp)
 end
 
 
+# When the computer takes its turn
 def comp_takes_turn
-    $player = :comp
 
-    puts "\nComputer's turn"
+    $player = :comp
 
     # [Start of with random letters -> random letters in a certain range of known letter -> guess next later based on known words in dictionary]
     randIndex = rand(26)
     guess_letter = ('a'..'z').to_a[randIndex]
+    
+    puts "\nThe computer guessed: #{guess_letter}"
 
-    right_or_wrong(guess_letter)
+    right_or_wrong_letter(guess_letter)
 
     taking_turns(:user)
 end
 
 
+# Toggle between the players
 def taking_turns(player)
 
     between_turns
 
-    if player == :user
-        user_takes_turn
+    if player == :user 
+        puts "\n\nYour turn"
+        user_takes_turn(give_letter_or_word)
     else
+        puts "\n\nComputer's turn"
         comp_takes_turn
     end
 end
 
 
+# Between the turns
 def between_turns
-    if $mistakes_left <= 0 then
+
+    # Close when too many mistakes are taken
+    if $mistakes_left <= 0
         close_game
     end
 
+    # Show current $secret_word (letters may have been uncovered and user needs to know number of spaces)
+    puts "\n\nFigure out this word:"
     puts $secret_word
 
-    puts "Mistakes Left: #{$mistakes_left}"
+    # Close game when all letters found
+    if $secret_word == GAME_WORD
+        puts "\nAll the letters were found! Great job"
+        close_game
+    end
+
+    # Show number of mistakes left
+    puts "\nMistakes Left: #{$mistakes_left}"
 end
 
 
+# Player chooses they want to answer with a full word or one letter
+def give_letter_or_word
+    puts "Please type the number or word corresponding to your choice"
+    puts "Would you like to solve by \n1. letter \n2. word"
+
+    choice = gets.chomp
+
+    if choice == '1' || choice == 'letter'
+        "letter"
+    elsif choice == '2' || choice == 'word'
+        "word"
+    else
+        puts "That's not a valid answer"
+        give_letter_or_word
+    end
+end
 
 
+# How to close the game
 def close_game
     puts "That's the end of the game!"
+
+    #TODO
+    # replay?
+
     abort
 end
 
 
-taking_turns($player)
+
 
 
 
@@ -192,4 +215,38 @@ taking_turns($player)
 
 
 
+=begin 
+------------------------
+        PROCEDURE
+------------------------ 
+=end
 
+# Read 5desk line by line
+dictionary = File.readlines "5desk.txt"
+
+# Filter words that are 5 to 12 characters long
+filtered_words = []
+
+dictionary.each do |word|
+    if (5..12).to_a.include? word.length
+        filtered_words << word
+    end
+end
+
+# Pick a word from the filtered list at random
+GAME_WORD = filtered_words[ rand(filtered_words.length - 1) ].chomp
+
+create_secret_word
+
+# TODO: Remove
+puts "Game word: #{GAME_WORD}"
+puts "hidden: #{$secret_word}"
+
+# Global player variable so that all functions know if the user or computer is taking their turn
+$player = :user
+
+# Global number of mistakes left before game over
+$mistakes_left = 3
+
+# First turn
+taking_turns($player)
