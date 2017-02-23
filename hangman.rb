@@ -99,10 +99,14 @@ def user_takes_turn(choice)
         puts "\nPlease type in a letter"
         guess_letter = gets.chomp
 
+        if guess_letter == "--save" then save_game end
+
         right_or_wrong_letter(guess_letter)
     else
         puts "\nSomeone is feeling courageous, give it a shot by typing in the word"
         guess_word = gets.chomp
+
+        if guess_word == "--save" then save_game end
 
         right_or_wrong_word(guess_word)
     end
@@ -120,7 +124,7 @@ def comp_takes_turn
     randIndex = rand(26)
     guess_letter = ('a'..'z').to_a[randIndex]
     
-    puts "\nThe computer guessed: #{guess_letter}"
+    puts "The computer guessed: #{guess_letter}"
 
     right_or_wrong_letter(guess_letter)
 
@@ -150,6 +154,9 @@ def between_turns
     if $mistakes_left <= 0
         close_game
     end
+
+    # Remind user that they can save their game
+    puts "\n=============== Rmbr: Can save game by typing --save ===============\n"
 
     # Show current $secret_word (letters may have been uncovered and user needs to know number of spaces)
     puts "\n\nFigure out this word:"
@@ -182,6 +189,21 @@ def give_letter_or_word
         give_letter_or_word
     end
 end
+
+
+# Save the current game for later
+def save_game
+    saved_game_file = File.open("saved-game.txt", "w")
+    saved_game_file.puts "{ :GAME_WORD => #{GAME_WORD} , :$secret_word => #{$secret_word} , :$mistakes_left => #{$mistakes_left} }"
+    saved_game_file.close  
+
+    puts "\n\nGame has been saved"
+    puts "You will have the option to open saved game or start a new one next time" 
+    puts "See ya!"
+
+    abort
+end
+
 
 
 # How to close the game
