@@ -33,5 +33,4 @@ end
 
 # TODO
 # Cleanup and stylization
-# Modularization: global vars, input decisions, player turns, game manipulation, 
 
