@@ -30,5 +30,5 @@ else
 end
 
 # TODO
-# Save data include every output line of game
+# Cleanup and stylization
 
