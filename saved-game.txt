@@ -1,1 +1,1 @@
-{ :$game_word => "monikered" , :$secret_word => "m o _ _ k _ _ _ _" , :$mistakes_left => "2" }
+{ :$game_word => "pitfall" , :$secret_word => "_ _ _ _ _ _ _" , :$mistakes_left => "3" }
