@@ -16,8 +16,10 @@
 
 =end
 
-
-load "hangman-functions.rb"
+load "assets/global_vars.rb"
+load "assets/input_decisions.rb"
+load "assets/player_turns.rb"
+load "assets/game_manipulation.rb"
 
 # Check for saved games
 if File.exists?("saved-game.txt")
@@ -31,4 +33,5 @@ end
 
 # TODO
 # Cleanup and stylization
+# Modularization: global vars, input decisions, player turns, game manipulation, 
 
