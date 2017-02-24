@@ -17,10 +17,7 @@
 =end
 
 
-
-
 load "hangman-functions.rb"
-
 
 # Check for saved games
 if File.exists?("saved-game.txt")

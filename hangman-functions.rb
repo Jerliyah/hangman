@@ -1,4 +1,12 @@
 
+# Record everthing in terminal for game so that save data is more exact
+$terminal_history = []
+def to_terminal_and_history(statement)
+    puts statement
+    $terminal_history << statement
+end
+
+
 # Format the $game_word into a secret for viewing
 def create_secret_word
     # Array
@@ -36,13 +44,13 @@ end
 def right_or_wrong_letter(guess_letter)
 
     if $game_word.include? guess_letter
-        puts "\nNice"
+        to_terminal_and_history("\nNice")
 
         # Show found letters
         $secret_word = reformat_secret_word(guess_letter)
 
     else
-        puts "\nNope, that's not it"
+        to_terminal_and_history("\nNope, that's not it")
 
         # Countdown of mistakes left
         $mistakes_left -= 1
@@ -55,12 +63,12 @@ end
 def right_or_wrong_word(guess_word)
 
     if guess_word == $game_word
-        puts "\nAmazing! The puzzle has been solved, great job."
+        to_terminal_and_history("\nAmazing! The puzzle has been solved, great job.")
         close_game
 
     else
-        puts "\nOh my gosh! You did it! (it = providing the wrong answer)"
-        puts "Better luck next time"
+        to_terminal_and_history("\nOh my gosh! You did it! (it = providing the wrong answer)")
+        to_terminal_and_history("Better luck next time")
 
         # Countdown of mistakes left
         $mistakes_left -= 1
@@ -77,15 +85,17 @@ def user_takes_turn(choice)
 
     if choice == "letter"
         # Interface for guessing letters (one player against comp)
-        puts "\nPlease type in a letter"
+        to_terminal_and_history("\nPlease type in a letter")
         guess_letter = gets.chomp
+        $terminal_history << guess_letter
 
         if guess_letter == "--save" then save_game end
 
         right_or_wrong_letter(guess_letter)
     else
-        puts "\nSomeone is feeling courageous, give it a shot by typing in the word"
+        to_terminal_and_history("\nSomeone is feeling courageous, give it a shot by typing in the word")
         guess_word = gets.chomp
+        $terminal_history << guess_word
 
         if guess_word == "--save" then save_game end
 
@@ -105,7 +115,7 @@ def comp_takes_turn
     randIndex = rand(26)
     guess_letter = ('a'..'z').to_a[randIndex]
     
-    puts "The computer guessed: #{guess_letter}"
+    to_terminal_and_history("The computer guessed: #{guess_letter}")
 
     right_or_wrong_letter(guess_letter)
 
@@ -119,10 +129,10 @@ def taking_turns(player)
     between_turns
 
     if player == :user 
-        puts "\n\nYour turn"
+        to_terminal_and_history("\n\nYour turn")
         user_takes_turn(give_letter_or_word)
     else
-        puts "\n\nComputer's turn"
+        to_terminal_and_history("\n\nComputer's turn")
         comp_takes_turn
     end
 end
@@ -137,29 +147,30 @@ def between_turns
     end
 
     # Remind user that they can save their game
-    puts "\n=============== Rmbr: You can save game by typing --save ===============\n"
+    to_terminal_and_history("\n=============== Rmbr: You can save game by typing --save ===============\n")
 
     # Show current $secret_word (letters may have been uncovered and user needs to know number of spaces)
-    puts "\n\nFigure out this word:"
-    puts $secret_word
+    to_terminal_and_history("\n\nFigure out this word:")
+    to_terminal_and_history($secret_word)
 
     # Close game when all letters found
     if $secret_word == $game_word
-        puts "\nAll the letters were found! Great job"
+        to_terminal_and_history("\nAll the letters were found! Great job")
         close_game
     end
 
     # Show number of mistakes left
-    puts "\nMistakes Left: #{$mistakes_left}"
+    to_terminal_and_history("\nMistakes Left: #{$mistakes_left}")
 end
 
 
 # Player chooses whether they want to answer with a full word or one letter
 def give_letter_or_word
-    puts "Please type the number or word corresponding to your choice"
-    puts "Would you like to solve by \n1. letter \n2. word"
+    to_terminal_and_history("Please type the number or word corresponding to your choice")
+    to_terminal_and_history("Would you like to solve by \n1. letter \n2. word")
 
     choice = gets.chomp
+    $terminal_history << choice
 
     if choice == '1' || choice == 'letter'
         "letter"
@@ -168,7 +179,7 @@ def give_letter_or_word
     elsif choice == '--save'
         save_game
     else
-        puts "That's not a valid answer"
+        to_terminal_and_history("That's not a valid answer")
         give_letter_or_word
     end
 end
@@ -177,16 +188,14 @@ end
 # Save the current game for next run
 def save_game
     saved_game_file = File.open("saved-game.txt", "w")
-    # saved_game_file.puts "{ $game_word : #{$game_word} , $secret_word : #{$secret_word} , $mistakes_left : #{$mistakes_left} }"
-    # saved_game_file.puts "{ $game_word : \"#{$game_word}\" , $secret_word : \"#{$secret_word}\" , $mistakes_left : \"#{$mistakes_left}\" }"
 
-    saved_game_file.puts "{ :$game_word => \"#{$game_word}\" , :$secret_word => \"#{$secret_word}\" , :$mistakes_left => \"#{$mistakes_left}\" }"
+    saved_game_file.puts "{ :$game_word => \"#{$game_word}\" , :$secret_word => \"#{$secret_word}\" , :$mistakes_left => \"#{$mistakes_left}\" , :$terminal_history => #{$terminal_history} }"
 
     saved_game_file.close  
 
-    puts "\n\nGame has been saved"
-    puts "You will have the option to open saved game or start a new one next time" 
-    puts "See ya!"
+    to_terminal_and_history("\n\nGame has been saved")
+    to_terminal_and_history("You will have the option to open saved game or start a new one next time") 
+    to_terminal_and_history("See ya!")
 
     abort
 end
@@ -195,7 +204,7 @@ end
 
 # Closing the game
 def close_game
-    puts "That's the end of the game!"
+    to_terminal_and_history("That's the end of the game!")
 
     #TODO
     # replay?
@@ -206,10 +215,11 @@ end
 
 # At run, when saved data found
 def saved_or_new
-    puts "Would you like to reopen it or start a new game? (type number)"
-    puts "1. Saved game \n2. New game"
+    to_terminal_and_history("Would you like to reopen it or start a new game? (type number)")
+    to_terminal_and_history("1. Saved game \n2. New game")
 
    choice = gets.chomp
+   $terminal_history << choice
 
    if choice == '1'
        start_saved_game
@@ -218,7 +228,7 @@ def saved_or_new
         new_game
 
     else
-        puts "That's not a valid answer"
+        to_terminal_and_history("That's not a valid answer")
         saved_or_new
     end
 
@@ -250,8 +260,8 @@ def new_game
     $mistakes_left = 3
 
     # TODO: Remove
-    puts "Game word: #{$game_word}"
-    puts "hidden: #{$secret_word}"
+    to_terminal_and_history("Game word: #{$game_word}")
+    to_terminal_and_history("hidden: #{$secret_word}")
 
     # First turn
     taking_turns($player)
@@ -266,13 +276,13 @@ def start_saved_game
     $game_word = content_obj[:$game_word]
     $secret_word = content_obj[:$secret_word]
     $mistakes_left = content_obj[:$mistakes_left].to_i
+    $terminal_history = content_obj[:$terminal_history]
+
+    # Puts terminal history to terminal so user sees an exact save
+    $terminal_history.each do |statement| puts statement end
 
     # Global player variable so that all functions know if the user or computer is taking their turn
     $player = :user
-
-    # TODO: Remove
-    puts "Game word: #{$game_word}"
-    puts "hidden: #{$secret_word}"
 
     # First turn
     taking_turns($player)
