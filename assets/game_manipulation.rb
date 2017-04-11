@@ -24,10 +24,10 @@ def save_game
 
     saved_game_file.puts "{ :$game_word => \"#{$game_word}\" , :$secret_word => \"#{$secret_word}\" , :$mistakes_left => \"#{$mistakes_left}\" , :$terminal_history => #{$terminal_history} }"
 
-    saved_game_file.close  
+    saved_game_file.close
 
     to_terminal_and_history("\n\nGame has been saved")
-    to_terminal_and_history("You will have the option to open saved game or start a new one next time") 
+    to_terminal_and_history("You will have the option to open saved game or start a new one next time")
     to_terminal_and_history("See ya!")
 
     abort
@@ -38,7 +38,7 @@ def start_saved_game
     saved_game_file = File.open("saved-game.txt", "r")
     content = saved_game_file.read.chomp
     content_obj = eval(content)
-    
+
     $game_word = content_obj[:$game_word]
     $secret_word = content_obj[:$secret_word]
     $mistakes_left = content_obj[:$mistakes_left].to_i
@@ -79,7 +79,7 @@ def new_game
     $player = :user
 
     # Global number of mistakes left before game over
-    $mistakes_left = 3
+    $mistakes_left = 6
 
     welcome
 
@@ -90,4 +90,3 @@ def new_game
     # First turn
     taking_turns($player)
 end
-
